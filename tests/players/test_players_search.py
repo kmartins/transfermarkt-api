@@ -37,6 +37,7 @@ def test_players_search(query, page_number, len_greater_than_0, regex_integer, r
                 {
                     "id": And(str, len_greater_than_0, regex_integer),
                     "name": And(str, len_greater_than_0),
+                    "thumnmail": And(str, len_greater_than_0),
                     "position": And(str, len_greater_than_0),
                     "club": {
                         "id": And(str, len_greater_than_0, regex_integer),

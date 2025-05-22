@@ -11,6 +11,7 @@ class PlayerSearchClub(TransfermarktBaseModel):
 class PlayerSearchResult(TransfermarktBaseModel):
     id: str
     name: str
+    thumbnail: str
     position: str
     club: PlayerSearchClub
     age: Optional[int]

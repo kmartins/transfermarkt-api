@@ -33,7 +33,7 @@ class TransfermarktPlayerSearch(TransfermarktBase):
     def __parse_search_results(self) -> list:
         """
         Parse and return a list of player search results. Each result includes player information such as their unique
-        identifier, name, position, club (including ID and name), age, nationality, and market value.
+        identifier, name, image, position, club (including ID and name), age, nationality, and market value.
 
         Returns:
             list: A list of dictionaries, with each dictionary representing a player search result.
@@ -44,6 +44,7 @@ class TransfermarktPlayerSearch(TransfermarktBase):
         for result in search_results:
             idx = extract_from_url(result.xpath(Players.Search.ID))
             name = trim(result.xpath(Players.Search.NAME))
+            thumbnail = trim(result.xpath(Players.Search.IMAGE))
             position = trim(result.xpath(Players.Search.POSITION))
             club_name = trim(result.xpath(Players.Search.CLUB_NAME))
             club_id = safe_regex(result.xpath(Players.Search.CLUB_IMAGE), REGEX_CHART_CLUB_ID, "club_id")
@@ -55,6 +56,7 @@ class TransfermarktPlayerSearch(TransfermarktBase):
                 {
                     "id": idx,
                     "name": name,
+                    "thumbnail": thumbnail,
                     "position": position,
                     "club": {
                         "name": club_name,
