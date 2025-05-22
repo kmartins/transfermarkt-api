@@ -46,3 +46,6 @@ def test_get_player_transfers(player_id, len_greater_than_0, regex_integer, rege
     assert expected_schema.validate(result)
     assert any("marketValue" in stat for stat in result.get("transfers"))
     assert any("fee" in stat for stat in result.get("transfers"))
+    
+    transfer_types = [transfer.get("transferType") for transfer in result.get("transfers")]
+    assert all(transfer_types), "All transfers should have a transferType"
