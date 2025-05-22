@@ -44,7 +44,7 @@ class TransfermarktPlayerSearch(TransfermarktBase):
         for result in search_results:
             idx = extract_from_url(result.xpath(Players.Search.ID))
             name = trim(result.xpath(Players.Search.NAME))
-            thumbnail = trim(result.xpath(Players.Search.IMAGE))
+            thumbnail = trim(result.xpath(Players.Search.THUMBNAIL))
             position = trim(result.xpath(Players.Search.POSITION))
             club_name = trim(result.xpath(Players.Search.CLUB_NAME))
             club_id = safe_regex(result.xpath(Players.Search.CLUB_IMAGE), REGEX_CHART_CLUB_ID, "club_id")

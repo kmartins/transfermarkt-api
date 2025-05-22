@@ -62,6 +62,7 @@ class Players:
         RESULTS = BASE + "//tbody//tr[@class='odd' or @class='even']"
         ID = ".//td[@class='hauptlink']//a/@href"
         NAME = ".//td[@class='hauptlink']//a//@title"
+        THUMBNAIL = ".//img[@class='bilderrahmen-fixed']/@src"
         POSITION = ".//td[@class='zentriert'][1]//text()"
         CLUB_NAME = ".//img[@class='tiny_wappen']//@title"
         CLUB_IMAGE = ".//img[@class='tiny_wappen']//@src"
