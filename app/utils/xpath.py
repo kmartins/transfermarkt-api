@@ -89,6 +89,7 @@ class Players:
         ROWS = "//table[@class='items']//tbody//tr"
         HEADERS = "//table[@class='items']//thead//tr//@title"
         COMPETITIONS_URLS = "//table[@class='items']//td[@class='hauptlink no-border-links']//a//@href"
+        COMPETITION_THUMBNAIL = "//td[@class='hauptlink no-border-rechts']//img/@src";
         CLUBS_URLS = "//table[@class='items']//td[@class='hauptlink no-border-rechts zentriert']//a//@href"
         DATA = ".//text()"
 

@@ -6,6 +6,7 @@ from app.schemas.base import AuditMixin, TransfermarktBaseModel
 class PlayerStat(TransfermarktBaseModel):
     competition_id: str
     competition_name: str
+    competition_thumbnail: str
     season_id: str
     club_id: str
     appearances: Optional[int] = 0

@@ -35,12 +35,13 @@ class TransfermarktPlayerStats(TransfermarktBase):
         """
         rows = self.page.xpath(Players.Stats.ROWS)
         headers = to_camel_case(
-            ["Competition id", "Club id", "Season id", "Competition name"]
+            ["Competition id", "Competition Thumbnail", "Club id", "Season id", "Competition name"]
             + self.get_list_by_xpath(Players.Stats.HEADERS),
         )
 
         competitions_urls = self.get_list_by_xpath(Players.Stats.COMPETITIONS_URLS)
         clubs_urls = self.get_list_by_xpath(Players.Stats.CLUBS_URLS)
+        competitions_thumbnails = self.get_list_by_xpath(Players.Stats.COMPETITION_THUMBNAIL)
         competitions_ids = [extract_from_url(url) for url in competitions_urls]
         clubs_ids = [extract_from_url(url) for url in clubs_urls]
         stats = [
@@ -48,9 +49,8 @@ class TransfermarktPlayerStats(TransfermarktBase):
             for row in rows
         ]
         data = [
-            [comp_url, club_url] + stats for comp_url, club_url, stats in list(zip(competitions_ids, clubs_ids, stats))
+            [comp_url, comp_thumbnails, club_url] + stats for comp_url, comp_thumbnails, club_url, stats in list(zip(competitions_ids, competitions_thumbnails, clubs_ids, stats))
         ]
-        print(data);
         
         return [zip_lists_into_dict(headers, stat) for stat in data]
 
