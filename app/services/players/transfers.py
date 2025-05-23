@@ -69,7 +69,7 @@ class TransfermarktPlayerTransfers(TransfermarktBase):
         
         if "free transfer" in text.lower() or text == "-":
             return "€0", "free_transfer"
-            
+        
         return text, "permanent"
 
     def __parse_player_transfer_history(self) -> list:

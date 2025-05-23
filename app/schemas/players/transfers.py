@@ -17,7 +17,7 @@ class PlayerTransfer(TransfermarktBaseModel):
     upcoming: bool
     season: str
     market_value: Optional[int]
-    fee: Optional[int]
+    fee: Optional[str]
     transfer_type: Literal["permanent", "loan", "end_of_loan", "free_transfer"]
 
 

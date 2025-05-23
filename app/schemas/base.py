@@ -46,9 +46,9 @@ class TransfermarktBaseModel(BaseModel):
         "goals",
         "assists",
         "yellow_cards",
+        "second_yellow_cards",
         "red_cards",
         "minutes_played",
-        "fee",
         "appearances",
         "games_missed",
         mode="before",
@@ -75,6 +75,8 @@ class TransfermarktBaseModel(BaseModel):
             return int(float(value_str.replace("bn", "")) * 1_000_000_000)
         elif "b" in value_str:
             return int(float(value_str.replace("b", "")) * 1_000_000_000)
+        elif "." in value_str:
+            return int(float(value_str.replace(".", "")))
         else:
             return int(float(value_str))
 

@@ -50,7 +50,8 @@ class TransfermarktPlayerStats(TransfermarktBase):
         data = [
             [comp_url, club_url] + stats for comp_url, club_url, stats in list(zip(competitions_ids, clubs_ids, stats))
         ]
-
+        print(data);
+        
         return [zip_lists_into_dict(headers, stat) for stat in data]
 
     def get_player_stats(self) -> dict:
