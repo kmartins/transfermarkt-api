@@ -74,7 +74,10 @@ def safe_regex(text: Optional[Union[str, list]], regex, group: str) -> Optional[
     Returns:
         Optional[str]: The extracted group value or None if not found or if the input is not a string.
     """
-    if not isinstance(text, (str, list)) or not text:
+    if isinstance(text, list):
+        text = " ".join(t.strip() for t in text if t.strip())
+
+    if not isinstance(text, str):
         return None
 
     try:
