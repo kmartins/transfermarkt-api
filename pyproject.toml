@@ -12,6 +12,7 @@ python = "^3.9"
 lxml = "==5.3.0"
 beautifulsoup4 = "==4.12.3"
 requests = "==2.32.3"
+cloudscraper = ">=1.2.71"
 fastapi = "==0.115.6"
 uvicorn = {extras = ["standard"], version = "==0.34.0"}
 slowapi = "==0.1.9"
