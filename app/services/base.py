@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 from typing import Optional
 from xml.etree import ElementTree
 
-import cloudscraper
 from bs4 import BeautifulSoup
+from curl_cffi import requests as curl_requests
+from curl_cffi.requests import Response
 from fastapi import HTTPException
 from lxml import etree
-from requests import Response, TooManyRedirects
 
 from app.utils.utils import trim
 from app.utils.xpath import Pagination
@@ -45,29 +45,7 @@ class TransfermarktBase:
         """
         url = self.URL if not url else url
         try:
-            scraper = cloudscraper.create_scraper(
-                browser={"browser": "chrome", "platform": "windows", "mobile": False},
-            )
-            scraper.headers.update(
-                {
-                    "User-Agent": (
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                        "AppleWebKit/537.36 (KHTML, like Gecko) "
-                        "Chrome/124.0.0.0 Safari/537.36"
-                    ),
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "Accept-Encoding": "gzip, deflate, br",
-                    "Referer": "https://www.transfermarkt.com/",
-                    "Cache-Control": "no-cache",
-                    "Pragma": "no-cache",
-                },
-            )
-            response: Response = scraper.get(url=url)
-        except TooManyRedirects:
-            raise HTTPException(status_code=404, detail=f"Not found for url: {url}")
-        except ConnectionError:
-            raise HTTPException(status_code=500, detail=f"Connection error for url: {url}")
+            response: Response = curl_requests.get(url=url, impersonate="chrome124")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error for url: {url}. {e}")
         if response.status_code == 403:
