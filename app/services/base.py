@@ -8,6 +8,7 @@ from curl_cffi.requests import Response
 from fastapi import HTTPException
 from lxml import etree
 
+from app.settings import settings
 from app.utils.utils import trim
 from app.utils.xpath import Pagination
 
@@ -44,6 +45,8 @@ class TransfermarktBase:
                 server error status code.
         """
         url = self.URL if not url else url
+        if settings.SCRAPERAPI_KEY:
+            url = f"http://api.scraperapi.com?api_key={settings.SCRAPERAPI_KEY}&url={url}"
         try:
             response: Response = curl_requests.get(url=url, impersonate="chrome124")
         except Exception as e:
