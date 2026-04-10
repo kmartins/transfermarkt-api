@@ -45,7 +45,24 @@ class TransfermarktBase:
         """
         url = self.URL if not url else url
         try:
-            scraper = cloudscraper.create_scraper()
+            scraper = cloudscraper.create_scraper(
+                browser={"browser": "chrome", "platform": "windows", "mobile": False},
+            )
+            scraper.headers.update(
+                {
+                    "User-Agent": (
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/124.0.0.0 Safari/537.36"
+                    ),
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Referer": "https://www.transfermarkt.com/",
+                    "Cache-Control": "no-cache",
+                    "Pragma": "no-cache",
+                },
+            )
             response: Response = scraper.get(url=url)
         except TooManyRedirects:
             raise HTTPException(status_code=404, detail=f"Not found for url: {url}")
@@ -53,15 +70,35 @@ class TransfermarktBase:
             raise HTTPException(status_code=500, detail=f"Connection error for url: {url}")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error for url: {url}. {e}")
-        if 400 <= response.status_code < 500:
+        if response.status_code == 403:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access denied by Transfermarkt (403 Forbidden). The request was blocked. url: {url}",
+            )
+        elif response.status_code == 404:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Resource not found on Transfermarkt (404). url: {url}",
+            )
+        elif response.status_code == 405:
+            raise HTTPException(
+                status_code=405,
+                detail=f"Request blocked by Transfermarkt (405 Not Allowed). The server rejected the request method. url: {url}",
+            )
+        elif response.status_code == 429:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Too many requests to Transfermarkt (429 Rate Limited). Try again later. url: {url}",
+            )
+        elif 400 <= response.status_code < 500:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Client Error. {response.reason} for url: {url}",
+                detail=f"Client error {response.status_code} ({response.reason}) from Transfermarkt. url: {url}",
             )
         elif 500 <= response.status_code < 600:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Server Error. {response.reason} for url: {url}",
+                detail=f"Transfermarkt server error {response.status_code} ({response.reason}). url: {url}",
             )
         return response
 
