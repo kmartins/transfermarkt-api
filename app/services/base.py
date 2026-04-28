@@ -46,42 +46,43 @@ class TransfermarktBase:
             HTTPException: If there are too many redirects, or if the server returns a client or
                 server error status code.
         """
-        url = self.URL if not url else url
+        original_url = self.URL if not url else url
+        request_url = original_url
         if settings.SCRAPERAPI_KEY and not bypass_scraper:
-            url = f"http://api.scraperapi.com?api_key={settings.SCRAPERAPI_KEY}&url={url}"
+            request_url = f"http://api.scraperapi.com?api_key={settings.SCRAPERAPI_KEY}&url={original_url}"
         try:
-            response: Response = curl_requests.get(url=url, impersonate="chrome124")
+            response: Response = curl_requests.get(url=request_url, impersonate="chrome124")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error for url: {url}. {e}")
+            raise HTTPException(status_code=500, detail=f"Error for url: {original_url}. {e}")
         if response.status_code == 403:
             raise HTTPException(
                 status_code=403,
-                detail=f"Access denied by Transfermarkt (403 Forbidden). The request was blocked. url: {url}",
+                detail=f"Access denied by Transfermarkt (403 Forbidden). The request was blocked. url: {original_url}",
             )
         elif response.status_code == 404:
             raise HTTPException(
                 status_code=404,
-                detail=f"Resource not found on Transfermarkt (404). url: {url}",
+                detail=f"Resource not found on Transfermarkt (404). url: {original_url}",
             )
         elif response.status_code == 405:
             raise HTTPException(
                 status_code=405,
-                detail=f"Request blocked by Transfermarkt (405 Not Allowed). The server rejected the request method. url: {url}",
+                detail=f"Request blocked by Transfermarkt (405 Not Allowed). The server rejected the request method. url: {original_url}",
             )
         elif response.status_code == 429:
             raise HTTPException(
                 status_code=429,
-                detail=f"Too many requests to Transfermarkt (429 Rate Limited). Try again later. url: {url}",
+                detail=f"Too many requests to Transfermarkt (429 Rate Limited). Try again later. url: {original_url}",
             )
         elif 400 <= response.status_code < 500:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Client error {response.status_code} ({response.reason}) from Transfermarkt. url: {url}",
+                detail=f"Client error {response.status_code} ({response.reason}) from Transfermarkt. url: {original_url}",
             )
         elif 500 <= response.status_code < 600:
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"Transfermarkt server error {response.status_code} ({response.reason}). url: {url}",
+                detail=f"Transfermarkt server error {response.status_code} ({response.reason}). url: {original_url}",
             )
         return response
 
