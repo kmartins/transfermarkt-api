@@ -40,7 +40,7 @@ class TransfermarktPlayerStats(TransfermarktBase):
     def __fetch_competition_meta(self, competition_id: str) -> dict:
         """Fetch competition metadata (name, thumbnail) from tmapi."""
         try:
-            r = self.make_request(f"{TMAPI_BASE}/competition/{competition_id}")
+            r = self.make_request(f"{TMAPI_BASE}/competition/{competition_id}", bypass_scraper=True)
             return r.json().get("data") or {}
         except Exception:
             return {}
@@ -48,7 +48,7 @@ class TransfermarktPlayerStats(TransfermarktBase):
     def __fetch_club_meta(self, club_id: str) -> dict:
         """Fetch club metadata (name) from tmapi."""
         try:
-            r = self.make_request(f"{TMAPI_BASE}/club/{club_id}")
+            r = self.make_request(f"{TMAPI_BASE}/club/{club_id}", bypass_scraper=True)
             return r.json().get("data") or {}
         except Exception:
             return {}

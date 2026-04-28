@@ -29,13 +29,15 @@ class TransfermarktBase:
     page: ElementTree = field(default_factory=lambda: None, init=False)
     response: dict = field(default_factory=lambda: {}, init=False)
 
-    def make_request(self, url: Optional[str] = None) -> Response:
+    def make_request(self, url: Optional[str] = None, bypass_scraper: bool = False) -> Response:
         """
         Make an HTTP GET request to the specified URL.
 
         Args:
             url (str, optional): The URL to make the request to. If not provided, the class's URL
                 attribute will be used.
+            bypass_scraper (bool, optional): If True, skip ScraperAPI even when the key is set.
+                Use this for internal/trusted APIs that don't need scraping proxies.
 
         Returns:
             Response: An HTTP Response object containing the server's response to the request.
@@ -45,7 +47,7 @@ class TransfermarktBase:
                 server error status code.
         """
         url = self.URL if not url else url
-        if settings.SCRAPERAPI_KEY:
+        if settings.SCRAPERAPI_KEY and not bypass_scraper:
             url = f"http://api.scraperapi.com?api_key={settings.SCRAPERAPI_KEY}&url={url}"
         try:
             response: Response = curl_requests.get(url=url, impersonate="chrome124")
