@@ -54,7 +54,9 @@ class TransfermarktBaseModel(BaseModel):
         mode="before",
         check_fields=False,
     )
-    def parse_str_to_int(cls, v: str) -> Optional[int]:
+    def parse_str_to_int(cls, v) -> Optional[int]:
+        if isinstance(v, int):
+            return v
         if not v or not any(char.isdigit() for char in v):
             return None
 

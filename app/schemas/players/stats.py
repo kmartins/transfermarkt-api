@@ -9,6 +9,7 @@ class PlayerStat(TransfermarktBaseModel):
     competition_thumbnail: str
     season_id: str
     club_id: str
+    club_name: Optional[str] = None
     appearances: Optional[int] = 0
     goals: Optional[int] = 0
     assists: Optional[int] = 0
