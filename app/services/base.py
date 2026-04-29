@@ -3,6 +3,7 @@ from typing import Optional
 from xml.etree import ElementTree
 
 from bs4 import BeautifulSoup
+from cachetools import TTLCache
 from curl_cffi import requests as curl_requests
 from curl_cffi.requests import Response
 from fastapi import HTTPException
@@ -11,6 +12,8 @@ from lxml import etree
 from app.settings import settings
 from app.utils.utils import trim
 from app.utils.xpath import Pagination
+
+_cache: TTLCache = TTLCache(maxsize=settings.CACHE_MAXSIZE, ttl=settings.CACHE_TTL)
 
 
 @dataclass
@@ -47,6 +50,10 @@ class TransfermarktBase:
                 server error status code.
         """
         original_url = self.URL if not url else url
+
+        if settings.CACHE_ENABLE and original_url in _cache:
+            return _cache[original_url]
+
         request_url = original_url
         if settings.SCRAPERAPI_KEY and not bypass_scraper:
             request_url = f"http://api.scraperapi.com?api_key={settings.SCRAPERAPI_KEY}&url={original_url}"
@@ -84,6 +91,10 @@ class TransfermarktBase:
                 status_code=response.status_code,
                 detail=f"Transfermarkt server error {response.status_code} ({response.reason}). url: {original_url}",
             )
+
+        if settings.CACHE_ENABLE:
+            _cache[original_url] = response
+
         return response
 
     def request_url_bsoup(self) -> BeautifulSoup:
