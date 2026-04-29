@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from app.services.base import TransfermarktBase
 
@@ -37,19 +36,27 @@ class TransfermarktPlayerStats(TransfermarktBase):
         response = self.make_request(self.URL)
         self._ceapi_data = response.json()["data"]
 
-    def __fetch_competition_meta(self, competition_id: str) -> dict:
-        """Fetch competition metadata (name, thumbnail) from tmapi."""
+    def __fetch_competitions_meta(self, competition_ids: list) -> dict:
+        """Fetch metadata for all competitions in a single bulk request from tmapi."""
+        if not competition_ids:
+            return {}
         try:
-            r = self.make_request(f"{TMAPI_BASE}/competition/{competition_id}", bypass_scraper=True)
-            return r.json().get("data") or {}
+            query = "&".join(f"ids[]={cid}" for cid in competition_ids)
+            r = self.make_request(f"{TMAPI_BASE}/competitions?{query}", bypass_scraper=True)
+            items = r.json().get("data") or []
+            return {item["id"]: item for item in items if item.get("id")}
         except Exception:
             return {}
 
-    def __fetch_club_meta(self, club_id: str) -> dict:
-        """Fetch club metadata (name) from tmapi."""
+    def __fetch_clubs_meta(self, club_ids: list) -> dict:
+        """Fetch metadata for all clubs in a single bulk request from tmapi."""
+        if not club_ids:
+            return {}
         try:
-            r = self.make_request(f"{TMAPI_BASE}/club/{club_id}", bypass_scraper=True)
-            return r.json().get("data") or {}
+            query = "&".join(f"ids[]={cid}" for cid in club_ids)
+            r = self.make_request(f"{TMAPI_BASE}/clubs?{query}", bypass_scraper=True)
+            items = r.json().get("data") or []
+            return {item["id"]: item for item in items if item.get("id")}
         except Exception:
             return {}
 
@@ -112,39 +119,19 @@ class TransfermarktPlayerStats(TransfermarktBase):
         competition_ids = self._ceapi_data.get("competitionIds") or []
         club_ids = self._ceapi_data.get("clubIds") or []
 
-        # Fetch competition and club metadata concurrently
-        comp_meta: dict = {}
-        club_meta: dict = {}
-
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            comp_futures = {
-                executor.submit(self.__fetch_competition_meta, cid): cid
-                for cid in competition_ids
-            }
-            club_futures = {
-                executor.submit(self.__fetch_club_meta, cid): cid
-                for cid in club_ids
-            }
-            for future in as_completed(comp_futures):
-                comp_meta[comp_futures[future]] = future.result()
-            for future in as_completed(club_futures):
-                club_meta[club_futures[future]] = future.result()
-
+        comp_meta = self.__fetch_competitions_meta(competition_ids)
+        club_meta = self.__fetch_clubs_meta(club_ids)
         groups = self.__aggregate_games(games)
 
         result = []
         for row in groups.values():
             comp = comp_meta.get(row["competitionId"]) or {}
             club = club_meta.get(row["clubId"]) or {}
-
-            images = (comp.get("historical") or {}).get("images") or []
-            thumbnail = images[0]["url"] if images else ""
-
             participation = row.get("participationState") or {}
 
             result.append({
                 "competitionId": row["competitionId"],
-                "competitionThumbnail": thumbnail,
+                "competitionThumbnail": comp.get("logoUrl", ""),
                 "clubId": row["clubId"],
                 "clubName": club.get("name", ""),
                 "seasonId": row["seasonId"],
