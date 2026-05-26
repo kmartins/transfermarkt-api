@@ -90,6 +90,8 @@ class TransfermarktPlayerProfile(TransfermarktBase):
         }
         self.response["foot"] = self.get_text_by_xpath(Players.Profile.FOOT)
         self.response["shirtNumber"] = self.get_text_by_xpath(Players.Profile.SHIRT_NUMBER)
+        on_loan_from_url = self.get_text_by_xpath(Players.Profile.ON_LOAN_FROM_URL)
+        on_loan_from_name = self.get_text_by_xpath(Players.Profile.ON_LOAN_FROM_NAME)
         self.response["club"] = {
             "id": extract_from_url(self.get_text_by_xpath(Players.Profile.CURRENT_CLUB_URL)),
             "name": self.get_text_by_xpath(Players.Profile.CURRENT_CLUB_NAME),
@@ -100,6 +102,11 @@ class TransfermarktPlayerProfile(TransfermarktBase):
             "lastClubName": self.get_text_by_xpath(Players.Profile.LAST_CLUB_NAME),
             "mostGamesFor": self.get_text_by_xpath(Players.Profile.MOST_GAMES_FOR_CLUB_NAME),
         }
+        self.response["parentClub"] = {
+            "id": extract_from_url(on_loan_from_url),
+            "name": on_loan_from_name,
+            "contractExpires": self.get_text_by_xpath(Players.Profile.ON_LOAN_FROM_CONTRACT_EXPIRES),
+        } if on_loan_from_name else None
         self.response["marketValue"] = self.get_text_by_xpath(Players.Profile.MARKET_VALUE, iloc_to=3, join_str="")
         self.response["agent"] = {
             "name": self.get_text_by_xpath(Players.Profile.AGENT_NAME),

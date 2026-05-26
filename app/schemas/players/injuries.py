@@ -8,9 +8,9 @@ class Injury(TransfermarktBaseModel):
     season: str
     injury: str
     from_date: date
-    until_date: Optional[date]
+    until_date: Optional[date] = None
     days: int
-    games_missed: Optional[int]
+    games_missed: Optional[int] = None
     games_missed_clubs: list[str]
 
 

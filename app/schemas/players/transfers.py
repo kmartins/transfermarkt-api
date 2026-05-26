@@ -16,12 +16,12 @@ class PlayerTransfer(TransfermarktBaseModel):
     date: date
     upcoming: bool
     season: str
-    market_value: Optional[int]
-    fee: Optional[str]
+    market_value: Optional[int] = None
+    fee: Optional[str] = None
     transfer_type: Literal["permanent", "loan", "end_of_loan", "free_transfer"]
 
 
 class PlayerTransfers(TransfermarktBaseModel, AuditMixin):
     id: str
     transfers: list[PlayerTransfer]
-    youth_clubs: Optional[list[str]]
+    youth_clubs: Optional[list[str]] = None

@@ -14,9 +14,9 @@ class PlayerSearchResult(TransfermarktBaseModel):
     thumbnail: str
     position: str
     club: PlayerSearchClub
-    age: Optional[int]
+    age: Optional[int] = None
     nationalities: list[str]
-    market_value: Optional[int]
+    market_value: Optional[int] = None
 
 
 class PlayerSearch(TransfermarktBaseModel, AuditMixin):

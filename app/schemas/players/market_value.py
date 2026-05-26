@@ -28,6 +28,6 @@ class PlayerRanking(RootModel):
 
 class PlayerMarketValue(TransfermarktBaseModel, AuditMixin):
     id: str
-    market_value: Optional[int]
+    market_value: Optional[int] = None
     marketValueHistory: list[MarketValueHistory]
     ranking: PlayerRanking
